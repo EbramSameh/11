@@ -345,7 +345,7 @@ function shuffle(list){const a=list.slice();for(let i=a.length-1;i>0;i--){const 
 function setBadge(label,good){$("connectionLabel").textContent=label;$("connectionDot").className=good?"dot good":"dot";}
 function toast(message){$("toast").textContent=message;$("toast").classList.remove("hidden");clearTimeout(toastHandle);toastHandle=setTimeout(()=>$("toast").classList.add("hidden"),3600);}
 function showPage(which){$("homeView").classList.toggle("hidden",which!=="home");$("hostView").classList.toggle("hidden",which!=="host");$("studentView").classList.toggle("hidden",which!=="student");window.scrollTo({top:0,behavior:"smooth"});}
-function saveConfigFromField(){try{const parsed=JSON.parse($("firebaseConfigInput").value.trim());if(!parsed.apiKey||!parsed.projectId||!parsed.databaseURL)throw new Error("Include apiKey, projectId, and databaseURL from your Firebase web config.");config=parsed;localStorage.setItem("geobattleFirebaseConfig",JSON.stringify(config));$("configStatus").textContent="Config saved on this device. You can create a room now."; $("configStatus").className="notice success";$("configStatus").classList.remove("hidden");setBadge("Config saved",true);toast("Firebase config saved.");return true;}catch(e){$("configStatus").textContent=e.message||"That JSON is not valid. Copy the complete Firebase web config."; $("configStatus").className="notice error";$("configStatus").classList.remove("hidden");return false;}}
+function saveConfigFromField(){try{const parsed=JSON.parse($("firebaseConfigInput").value.trim());if(!parsed.apiKey||!parsed.projectId||!parsed.databaseURL)throw new Error("Include apiKey, projectId, and databaseURL from your Firebase web config.");config=parsed;localStorage.setItem("geobattleFirebaseConfig",JSON.stringify(config));$("configStatus").textContent="Config saved on this device. You can create a room now."; $("configStatus").className="notice success";$("configStatus").classList.remove("hidden");setBadge("Config saved",false);toast("Firebase config saved.");return true;}catch(e){$("configStatus").textContent=e.message||"That JSON is not valid. Copy the complete Firebase web config."; $("configStatus").className="notice error";$("configStatus").classList.remove("hidden");return false;}}
 function readInvite(){try{const m=location.hash.match(/^#invite=([A-Za-z0-9_-]+)$/);if(!m)return null;let encoded=m[1].replace(/-/g,"+").replace(/_/g,"/");while(encoded.length%4)encoded+="=";return JSON.parse(atob(encoded));}catch(e){return null;}}
 const invite=readInvite();
 try{config=(invite&&invite.config)||JSON.parse(localStorage.getItem("geobattleFirebaseConfig")||"null");}catch(e){config=null;}
@@ -491,7 +491,7 @@ $("pinInput").addEventListener("input",()=>{$("pinInput").value=$("pinInput").va
 $("playerNameInput").addEventListener("keydown",e=>{if(e.key==="Enter")joinRoom();});
 $("copyPinBtn").addEventListener("click",()=>copyText(pin));
 $("copyInviteBtn").addEventListener("click",()=>copyText(makeInviteLink()));
-$("hostHomeBtn").addEventListener("click",()=>{if(confirm("Leave the host dashboard? The room remains active while this page is open.")){role="";showPage("home");}});
+$("hostHomeBtn").addEventListener("click",()=>{if(hostRoom&&hostRoom.status!=="finished"){toast("Finish or end the current quiz before leaving the host dashboard.");return;}if(confirm("Return to the home screen?")){if(hostUnsubscribe){hostUnsubscribe();hostUnsubscribe=null;}role="";showPage("home");}});
 $("startQuizBtn").addEventListener("click",startQuiz);
 $("revealAnswerBtn").addEventListener("click",revealCurrentQuestion);
 $("nextQuestionBtn").addEventListener("click",()=>{if(hostRoom&&hostRoom.index>=(hostRoom.order||[]).length-1)finishQuiz();else if(hostRoom)startQuestion(hostRoom.index+1);});
@@ -499,7 +499,7 @@ $("endQuizBtn").addEventListener("click",()=>{if(confirm("End this quiz and show
 $("downloadCsvBtn").addEventListener("click",downloadCsv);
 $("newRoomBtn").addEventListener("click",()=>{role="";hostRoom=null;pin="";showPage("home");hostGame();});
 if(invite&&invite.pin){$("joinPanel").classList.remove("hidden");}
-setBadge(config?"Config ready":"Ready to play",!!config);
+setBadge(config?"Setup saved":"Ready to play",false);
 </script>
 </body>
 </html>
