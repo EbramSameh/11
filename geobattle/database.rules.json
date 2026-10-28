@@ -15,7 +15,8 @@
         "scores": {
           "$uid": {
             ".write": "auth != null && auth.uid == root.child('rooms').child($roomId).child('hostUid').val()"
-          }
+          },
+          ".write": "auth != null && auth.uid == root.child('rooms').child($roomId).child('hostUid').val()"
         },
         "responses": {
           "$questionIndex": {
@@ -24,7 +25,8 @@
               ".write": "auth != null && ((auth.uid == $uid && !data.exists() && newData.exists()) || auth.uid == root.child('rooms').child($roomId).child('hostUid').val())",
               ".validate": "!newData.exists() || (newData.hasChildren(['choice']) && newData.numChildren() == 1 && newData.child('choice').isNumber() && newData.child('choice').val() >= 0 && newData.child('choice').val() <= 3)"
             }
-          }
+          },
+          ".write": "auth != null && auth.uid == root.child('rooms').child($roomId).child('hostUid').val()"
         }
       }
     }
